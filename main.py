@@ -4,6 +4,7 @@ import sympy as sp
 from sympy import pi
 from pystyle import Colors, Colorate, Center
 import os
+import requests
 
 def sym_eval_angle(expr_text: str) -> sp.Expr:
     expr_text = (expr_text or "").strip()
