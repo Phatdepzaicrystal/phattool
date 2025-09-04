@@ -7,7 +7,7 @@ import os
 import requests
 
 # ========== Self Update ==========
-REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/main/main.py"
+REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
 LOCAL_FILE = os.path.abspath(__file__)
 
 def self_update():
