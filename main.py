@@ -2,10 +2,34 @@
 import sys
 import sympy as sp
 from sympy import pi
-from pystyle import Colors, Colorate, Center
+from pystyle import Colors, Colorate
 import os
 import requests
 
+# ========== Self Update ==========
+REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/main/main.py"
+LOCAL_FILE = os.path.abspath(__file__)
+
+def self_update():
+    try:
+        r = requests.get(REPO_RAW_URL, timeout=5)
+        if r.status_code == 200:
+            new_code = r.text
+            with open(LOCAL_FILE, "r", encoding="utf-8") as f:
+                old_code = f.read()
+            if new_code.strip() != old_code.strip():
+                print("🔄 Đang cập nhật code mới từ GitHub...")
+                with open(LOCAL_FILE, "w", encoding="utf-8") as f:
+                    f.write(new_code)
+                print("✅ Đã cập nhật! Khởi động lại...")
+                os.execv(sys.executable, ["python"] + [LOCAL_FILE] + sys.argv[1:])
+    except Exception as e:
+        print("⚠️ Không thể cập nhật:", e)
+
+# gọi update trước khi chạy chính
+self_update()
+
+# ========== Xử lý góc & Toán học ==========
 def sym_eval_angle(expr_text: str) -> sp.Expr:
     expr_text = (expr_text or "").strip()
     try:
@@ -29,18 +53,15 @@ def inline_unicode(expr: sp.Expr) -> str:
     s = s.replace("·π", "π").replace(")·π", ")π").replace("π·", "π")
     return s
 
-
 def deg_to_rad_str(deg_text: str) -> str:
     deg = float(deg_text.strip())
     rad = sp.nsimplify(deg * sp.pi / 180)
     return inline_unicode(rad)
 
-
 def rad_to_deg_str(rad_text: str) -> str:
     angle = sym_eval_angle(rad_text)
     deg = sp.nsimplify(angle * 180 / sp.pi)
     return inline_unicode(deg)
-
 
 def trig_compute(func_name: str, angle_text: str) -> str:
     func_map = {"sin": sp.sin, "cos": sp.cos, "tan": sp.tan, "cot": sp.cot}
@@ -50,36 +71,40 @@ def trig_compute(func_name: str, angle_text: str) -> str:
     val = sp.simplify(func_map[func_name](angle))
     return inline_unicode(val)
 
-
+# ========== Giao diện ==========
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 def banner():
-    re = requests.get('https://ipinfo.io/json')
-    ip=re.json()['ip']
-    country=re.json()['country']
-    org = re.json()['org']
+    try:
+        re = requests.get('https://ipinfo.io/json', timeout=5)
+        ip = re.json().get('ip', 'Unknown')
+        country = re.json().get('country', 'Unknown')
+        org = re.json().get('org', 'Unknown')
+    except:
+        ip, country, org = "?", "?", "?"
+
     print(Colorate.Horizontal(Colors.red_to_black,"════════════════════════════════════════════════",1))
     print("\033[1;37m                 \033[1;91mP\033[1;97mH\033[1;36mA\033[1;32mT\033[1;35mC\033[1;33mR\033[1;34mY\033[1;36mS\033[1;32mT\033[1;37mA\033[1;33mL")
     print(Colorate.Horizontal(Colors.red_to_black,"════════════════════════════════════════════════",1))
-    print(LIGHT_PURPLE+r"""
+    print("\033[95m" + r"""
  _____                 _____            
 /__  /________        /__  /________
   / //_  /_  /          / //_  /_  /
  / /__/ /_/ /_         / /__/ /_/ /_
 /____/___/___/        /____/___/___/   
-    """+END)
+    """ + "\033[0m")
     print("\033[1;97m════════════════════════════════════════════════")
     print("\033[1;97mDev      : \033[1;36mPhat_Crystal ≽^•⩊•^≼")
     print("\033[1;97mBio      : \033[1;36mhttps://guns.lol/phat_crystal")
     print("\033[1;97m════════════════════════════════════════════════")
     print("\033[1;91m[💀] Lưu ý 1: \033[1;32mTool Mới Làm")
     print("\033[1;91m[💀] Lưu ý 2: \033[1;32mBật 1.1.1.1 nếu không nhập đc Authorization!")
-    print("\033[1;91m[💀] Lưu ý 3: \033[1;32mTổ hợp phím dừng chương trình: Ctrl + C !")
+    print("\033[1;91m[💀] Lưu ý 3: \033[1;32mTổ hợp phím dừng: Ctrl + C !")
     print("\033[97m════════════════════════════════════════════════")
-    print("\033[91m[🔰] IP ADDRESS: \033[97m",ip)
-    print("\033[91m[🔰] COUNTRY: \033[97m",country)
-    print("\033[91m[🔰] NHÀ MẠNG: \033[97m",org.split()[1])
+    print("\033[91m[🔰] IP ADDRESS: \033[97m", ip)
+    print("\033[91m[🔰] COUNTRY: \033[97m", country)
+    print("\033[91m[🔰] NHÀ MẠNG: \033[97m", org.split()[1] if len(org.split())>1 else org)
     print("\033[97m════════════════════════════════════════════════")
 
 def print_menu():
@@ -93,6 +118,7 @@ def print_menu():
     0️⃣  ❎ Thoát
     """))
 
+# ========== Main ==========
 def main():
     if len(sys.argv) >= 3:
         func = sys.argv[1].lower()
