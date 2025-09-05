@@ -35,7 +35,7 @@ CROSSED = "\033[9m"
 END = "\033[0m"
 
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
-EXE_DOWNLOAD_URL = "https://github.com/Phatdepzaicrystal/phattool/actions/runs/17483364837/artifacts/3933776908"
+EXE_DOWNLOAD_URL = "https://github.com/Phatdepzaicrystal/phattool/releases/latest/download/main.exe"
 LOCAL_FILE = os.path.abspath(__file__)
 
 def self_update():
