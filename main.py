@@ -4,9 +4,9 @@ import sympy as sp
 from sympy import pi
 from pystyle import Colors, Colorate
 import os
+import subprocess
 import requests
 
-# ========== Self Update ==========
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
 LOCAL_FILE = os.path.abspath(__file__)
 
@@ -28,6 +28,27 @@ def self_update():
 
 # gọi update trước khi chạy chính
 self_update()
+
+def relaunch_in_windows_terminal():
+    # Chỉ áp dụng cho Windows
+    if os.name == "nt":
+        parent = os.environ.get("ComSpec", "").lower()
+        # Nếu đang chạy trong cmd.exe thì relaunch trong wt.exe
+        if "cmd.exe" in parent:
+            try:
+                exe_path = sys.executable
+                script_path = os.path.abspath(__file__)
+                # Nếu build exe rồi thì chạy exe, ngược lại chạy python script
+                if script_path.lower().endswith(".exe"):
+                    subprocess.Popen(["wt.exe", script_path] + sys.argv[1:])
+                else:
+                    subprocess.Popen(["wt.exe", exe_path, script_path] + sys.argv[1:])
+                sys.exit(0)
+            except Exception as e:
+                print("⚠️ Không thể mở bằng Windows Terminal:", e)
+
+# Gọi ngay khi bắt đầu
+relaunch_in_windows_terminal()
 
 # ========== Xử lý góc & Toán học ==========
 def sym_eval_angle(expr_text: str) -> sp.Expr:
