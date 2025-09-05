@@ -209,3 +209,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    input("\n👉 Nhấn Enter để thoát...")
