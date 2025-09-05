@@ -18,10 +18,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
-      - name: Build exe with icon
-        run: pyinstaller --onefile --icon=phat.ico --name phat main.py
-      - name: Upload exe
+      - name: Build exe (onedir, ổn định)
+        run: pyinstaller --onedir --icon=phat.ico --name phat main.py
+      - name: Upload exe folder
         uses: actions/upload-artifact@v4
         with:
           name: phat-windows-exe
-          path: dist/phat.exe
+          path: dist/phat/**
