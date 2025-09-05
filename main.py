@@ -35,17 +35,33 @@ CROSSED = "\033[9m"
 END = "\033[0m"
 
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
+EXE_DOWNLOAD_URL = "https://github.com/Phatdepzaicrystal/phattool/actions/runs/17483364837/artifacts/3933776908"
 LOCAL_FILE = os.path.abspath(__file__)
 
-# ========== Auto Update ==========
 def self_update():
     try:
-        # Nếu đang chạy exe thì bỏ qua update
+        # Nếu đang chạy EXE
         if getattr(sys, "frozen", False):
-            print("⚠️ Đang chạy .exe → bỏ qua cập nhật.")
+            exe_path = sys.executable
+            print("🔍 Đang kiểm tra bản cập nhật exe...")
+
+            try:
+                r = requests.get(EXE_DOWNLOAD_URL, timeout=15)
+                if r.status_code == 200:
+                    print("🔄 Đang tải exe mới từ GitHub...")
+                    with open(exe_path, "wb") as f:
+                        f.write(r.content)
+                    print("✅ Đã cập nhật exe mới, khởi động lại...")
+                    os.execv(exe_path, [exe_path] + sys.argv[1:])
+                else:
+                    print("⚠️ Không tìm thấy file exe mới trên GitHub Release!")
+            except Exception as e:
+                print("⚠️ Update exe thất bại:", e)
             return  
 
-        r = requests.get(REPO_RAW_URL, timeout=5)
+        # Nếu đang chạy bằng Python script
+        print("🔍 Đang kiểm tra bản cập nhật script...")
+        r = requests.get(REPO_RAW_URL, timeout=10)
         if r.status_code == 200:
             new_code = r.text
             with open(LOCAL_FILE, "r", encoding="utf-8") as f:
@@ -56,10 +72,10 @@ def self_update():
                     f.write(new_code)
                 print("✅ Đã cập nhật! Khởi động lại...")
                 os.execv(sys.executable, [sys.executable, LOCAL_FILE] + sys.argv[1:])
+            else:
+                print("✅ Code đang là bản mới nhất.")
     except Exception as e:
         print("⚠️ Không thể cập nhật:", e)
-
-self_update()
 
 # ========== Relaunch Windows Terminal ==========
 def relaunch_in_windows_terminal():
