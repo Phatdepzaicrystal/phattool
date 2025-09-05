@@ -26,8 +26,27 @@ def self_update():
     except Exception as e:
         print("⚠️ Không thể cập nhật:", e)
 
-# gọi update trước khi chạy chính
-self_update()
+IS_FROZEN = getattr(sys, 'frozen', False)
+
+# chỉ update khi chạy .py
+if not IS_FROZEN:
+    def self_update():
+        try:
+            r = requests.get(REPO_RAW_URL, timeout=5)
+            if r.status_code == 200:
+                new_code = r.text
+                with open(LOCAL_FILE, "r", encoding="utf-8") as f:
+                    old_code = f.read()
+                if new_code.strip() != old_code.strip():
+                    print("🔄 Đang cập nhật code mới từ GitHub...")
+                    with open(LOCAL_FILE, "w", encoding="utf-8") as f:
+                        f.write(new_code)
+                    print("✅ Đã cập nhật! Khởi động lại...")
+                    os.execv(sys.executable, ["python"] + [LOCAL_FILE] + sys.argv[1:])
+        except Exception as e:
+            print("⚠️ Không thể cập nhật:", e)
+
+    self_update()
 
 def relaunch_in_windows_terminal():
     # Chỉ áp dụng cho Windows
