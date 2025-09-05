@@ -179,6 +179,7 @@ def print_menu():
     print(f"〖2〗 {Colorate.Horizontal(Colors.blue_to_black,'Cos()',1)}{GREEN}[Online👑]{END}")
     print(f"〖3〗 {Colorate.Horizontal(Colors.blue_to_black,'Tang()',1)}{GREEN}[Online👑]{END}")
     print(f"〖4〗 {Colorate.Horizontal(Colors.blue_to_black,'Cotang()',1)}{GREEN}[Online👑]{END}")
+    print(f"〖1〗 {Colorate.Horizontal(Colors.blue_to_black,'Sin()',1)}{GREEN}[Online👑]{END}")
     box("Đổi Đơn Vị")
     print(f"〖5〗 {Colorate.Horizontal(Colors.blue_to_black,'Độ (°) → Radian (rad)',1)}{GREEN}[Online👑]{END}")
     print(f"〖6〗 {Colorate.Horizontal(Colors.blue_to_black,'Radian (rad) → Độ (°)',1)}{GREEN}[Online👑]{END}")
