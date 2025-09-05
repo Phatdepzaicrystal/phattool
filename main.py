@@ -7,6 +7,7 @@ import os
 import requests
 import subprocess
 
+# Màu ANSI
 # MA MAU
 BLACK = "\033[0;30m"
 RED = "\033[0;31m"
@@ -36,10 +37,12 @@ END = "\033[0m"
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
 LOCAL_FILE = os.path.abspath(__file__)
 
+# ========== Auto Update ==========
 def self_update():
     try:
         # Nếu đang chạy exe thì bỏ qua update
         if getattr(sys, "frozen", False):
+            print("⚠️ Đang chạy .exe → bỏ qua cập nhật.")
             return  
 
         r = requests.get(REPO_RAW_URL, timeout=5)
@@ -58,6 +61,7 @@ def self_update():
 
 self_update()
 
+# ========== Relaunch Windows Terminal ==========
 def relaunch_in_windows_terminal():
     if os.name == "nt" and not os.environ.get("WT_RELAUNCHED"):
         parent = os.environ.get("ComSpec", "").lower()
@@ -66,7 +70,7 @@ def relaunch_in_windows_terminal():
                 exe_path = sys.executable
                 script_path = os.path.abspath(__file__)
                 env = os.environ.copy()
-                env["WT_RELAUNCHED"] = "1"  # đánh dấu đã mở bằng wt.exe
+                env["WT_RELAUNCHED"] = "1"
 
                 if script_path.lower().endswith(".exe"):
                     subprocess.Popen(["wt.exe", script_path] + sys.argv[1:], env=env)
@@ -76,32 +80,23 @@ def relaunch_in_windows_terminal():
             except Exception as e:
                 print("⚠️ Không thể mở bằng Windows Terminal:", e)
 
-# Gọi ngay khi bắt đầu
 relaunch_in_windows_terminal()
 
-# ========== Xử lý góc & Toán học ==========
+# ========== Toán học ==========
 def sym_eval_angle(expr_text: str) -> sp.Expr:
     expr_text = (expr_text or "").strip()
     try:
-        angle = sp.sympify(expr_text, locals={"pi": sp.pi})
-        return sp.simplify(angle)
+        return sp.simplify(sp.sympify(expr_text, locals={"pi": sp.pi}))
     except Exception as e:
         raise ValueError(f"Biểu thức góc không hợp lệ: {expr_text}") from e
 
 def inline_unicode(expr: sp.Expr) -> str:
     expr = sp.simplify(expr)
     s = sp.sstr(expr)
-    replacements = {
-        "sqrt(": "√(",
-        "pi": "π",
-        "*": "·",
-        "**": "^",
-    }
+    replacements = {"sqrt(": "√(", "pi": "π", "*": "·", "**": "^"}
     for k, v in replacements.items():
         s = s.replace(k, v)
-    s = s.replace("·(", "(").replace(")·", ")")
-    s = s.replace("·π", "π").replace(")·π", ")π").replace("π·", "π")
-    return s
+    return s.replace("·(", "(").replace(")·", ")").replace("·π", "π").replace("π·", "π")
 
 def deg_to_rad_str(deg_text: str) -> str:
     deg = float(deg_text.strip())
@@ -117,8 +112,7 @@ def trig_compute(func_name: str, angle_text: str) -> str:
     func_map = {"sin": sp.sin, "cos": sp.cos, "tan": sp.tan, "cot": sp.cot}
     if func_name not in func_map:
         raise ValueError("Hàm lượng giác không hợp lệ.")
-    angle = sym_eval_angle(angle_text)
-    val = sp.simplify(func_map[func_name](angle))
+    val = sp.simplify(func_map[func_name](sym_eval_angle(angle_text)))
     return inline_unicode(val)
 
 # ========== Giao diện ==========
@@ -156,36 +150,30 @@ def banner():
     print("\033[91m[🔰] COUNTRY: \033[97m", country)
     print("\033[91m[🔰] NHÀ MẠNG: \033[97m", org.split()[1] if len(org.split())>1 else org)
     print("\033[97m════════════════════════════════════════════════")
-    print("LOL")
-def box(text, width=60):
-    tl, tr, bl, br = "╭", "╮", "╰", "╯"
+
+def box(text, width=50):
     h, v = "─", "│"
-
-    padding = (width - 2 - len(text)) // 2
-    line = v + " " * padding + text + " " * (width - 2 - len(text) - padding) + v
-
-    print(tl + h*(width-2) + tr)
+    print("╭"+h*(width-2)+"╮")
     print(v + Colorate.Horizontal(Colors.rainbow, text.center(width-2), 1) + v)
-    print(bl + h*(width-2) + br)
-    
+    print("╰"+h*(width-2)+"╯")
+
 def print_menu():
-    box("Giải sin,cos,...", 50)
-    print(f"〖1〗 {Colorate.Horizontal(Colors.blue_to_black, 'Sin()', 1)}{GREEN}[Online👑]{END}")
-    print(f"〖2〗 {Colorate.Horizontal(Colors.blue_to_black, 'Cos()', 1)}{GREEN}[Online👑]{END}")
-    print(f"〖3〗 {Colorate.Horizontal(Colors.blue_to_black, 'Tang()', 1)}{GREEN}[Online👑]{END}")
-    print(f"〖4〗 {Colorate.Horizontal(Colors.blue_to_black, 'Cotang()', 1)}{GREEN}[Online👑]{END}")
-    box("Đổi Đơn Vị", 50)
-    print(f"〖5〗 {Colorate.Horizontal(Colors.blue_to_black, '🔄 Độ (°) → Radian (rad)', 1)}{GREEN}[Online👑]{END}")
-    print(f"〖6〗 {Colorate.Horizontal(Colors.blue_to_black, '🔄 Radian (rad) → Độ (°)', 1)}{GREEN}[Online👑]{END}")
-    print(f"〖0〗 {Colorate.Horizontal(Colors.blue_to_black, 'Thoát Tool', 1)}{GREEN}[Online👑]{END}")
+    box("Giải sin,cos,...")
+    print(f"〖1〗 {Colorate.Horizontal(Colors.blue_to_black,'Sin()',1)}{GREEN}[Online👑]{END}")
+    print(f"〖2〗 {Colorate.Horizontal(Colors.blue_to_black,'Cos()',1)}{GREEN}[Online👑]{END}")
+    print(f"〖3〗 {Colorate.Horizontal(Colors.blue_to_black,'Tang()',1)}{GREEN}[Online👑]{END}")
+    print(f"〖4〗 {Colorate.Horizontal(Colors.blue_to_black,'Cotang()',1)}{GREEN}[Online👑]{END}")
+    box("Đổi Đơn Vị")
+    print(f"〖5〗 {Colorate.Horizontal(Colors.blue_to_black,'Độ (°) → Radian (rad)',1)}{GREEN}[Online👑]{END}")
+    print(f"〖6〗 {Colorate.Horizontal(Colors.blue_to_black,'Radian (rad) → Độ (°)',1)}{GREEN}[Online👑]{END}")
+    print(f"〖0〗 {Colorate.Horizontal(Colors.blue_to_black,'Thoát Tool',1)}{GREEN}[Online👑]{END}")
 
 # ========== Main ==========
 def main():
     if len(sys.argv) >= 3:
-        func = sys.argv[1].lower()
-        angle_text = " ".join(sys.argv[2:])
+        func, angle_text = sys.argv[1].lower(), " ".join(sys.argv[2:])
         try:
-            if func in {"sin", "cos", "tan", "cot"}:
+            if func in {"sin","cos","tan","cot"}:
                 res = trig_compute(func, angle_text)
                 print(f"{func}({inline_unicode(sym_eval_angle(angle_text))}) = {res}")
             elif func == "deg2rad":
@@ -199,16 +187,17 @@ def main():
         return
 
     while True:
+        clear_screen()
         banner()
         print_menu()
         choice = input("👉 Chọn: ").strip()
         try:
             if choice == "0":
-                print(Colorate.Horizontal(Colors.red_to_purple, "👋 Tạm biệt!"))
+                print(Colorate.Horizontal(Colors.red_to_purple,"👋 Tạm biệt!"))
                 break
-            elif choice in {"1", "2", "3", "4"}:
-                angle_text = input("⏩ Nhập góc (vd: -11*pi/4, pi/6, 3*pi/2): ").strip()
-                func = {"1": "sin", "2": "cos", "3": "tan", "4": "cot"}[choice]
+            elif choice in {"1","2","3","4"}:
+                angle_text = input("⏩ Nhập góc (vd: pi/6, -11*pi/4): ").strip()
+                func = {"1":"sin","2":"cos","3":"tan","4":"cot"}[choice]
                 res = trig_compute(func, angle_text)
                 print(Colorate.Horizontal(Colors.blue_to_green,
                       f"{func}({inline_unicode(sym_eval_angle(angle_text))}) = {res}"))
@@ -221,9 +210,61 @@ def main():
                 print(Colorate.Horizontal(Colors.purple_to_blue,
                       f"{inline_unicode(sym_eval_angle(rad_text))} rad = {rad_to_deg_str(rad_text)}°"))
             else:
-                print(Colorate.Horizontal(Colors.red_to_yellow, "❌ Lựa chọn không hợp lệ!"))
+                print(Colorate.Horizontal(Colors.red_to_yellow,"❌ Lựa chọn không hợp lệ!"))
         except Exception as e:
-            print(Colorate.Horizontal(Colors.red_to_yellow, f"❌ Lỗi: {e}"))
+            print(Colorate.Horizontal(Colors.red_to_yellow,f"❌ Lỗi: {e}"))
+
+        input("\n👉 Nhấn Enter để tiếp tục...")
+
+if __name__ == "__main__":
+    main()
+
+
+# ========== Main ==========
+def main():
+    if len(sys.argv) >= 3:
+        func, angle_text = sys.argv[1].lower(), " ".join(sys.argv[2:])
+        try:
+            if func in {"sin","cos","tan","cot"}:
+                res = trig_compute(func, angle_text)
+                print(f"{func}({inline_unicode(sym_eval_angle(angle_text))}) = {res}")
+            elif func == "deg2rad":
+                print(f"{angle_text}° = {deg_to_rad_str(angle_text)} rad")
+            elif func == "rad2deg":
+                print(f"{inline_unicode(sym_eval_angle(angle_text))} rad = {rad_to_deg_str(angle_text)}°")
+            else:
+                print("❌ Lệnh không hợp lệ.")
+        except Exception as e:
+            print("❌ Lỗi:", e)
+        return
+
+    while True:
+        clear_screen()
+        banner()
+        print_menu()
+        choice = input("👉 Chọn: ").strip()
+        try:
+            if choice == "0":
+                print(Colorate.Horizontal(Colors.red_to_purple,"👋 Tạm biệt!"))
+                break
+            elif choice in {"1","2","3","4"}:
+                angle_text = input("⏩ Nhập góc (vd: pi/6, -11*pi/4): ").strip()
+                func = {"1":"sin","2":"cos","3":"tan","4":"cot"}[choice]
+                res = trig_compute(func, angle_text)
+                print(Colorate.Horizontal(Colors.blue_to_green,
+                      f"{func}({inline_unicode(sym_eval_angle(angle_text))}) = {res}"))
+            elif choice == "5":
+                deg_text = input("⏩ Nhập độ (vd: 180): ").strip()
+                print(Colorate.Horizontal(Colors.green_to_cyan,
+                      f"{deg_text}° = {deg_to_rad_str(deg_text)} rad"))
+            elif choice == "6":
+                rad_text = input("⏩ Nhập rad (vd: pi/3): ").strip()
+                print(Colorate.Horizontal(Colors.purple_to_blue,
+                      f"{inline_unicode(sym_eval_angle(rad_text))} rad = {rad_to_deg_str(rad_text)}°"))
+            else:
+                print(Colorate.Horizontal(Colors.red_to_yellow,"❌ Lựa chọn không hợp lệ!"))
+        except Exception as e:
+            print(Colorate.Horizontal(Colors.red_to_yellow,f"❌ Lỗi: {e}"))
 
         input("\n👉 Nhấn Enter để tiếp tục...")
 
