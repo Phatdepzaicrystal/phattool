@@ -126,18 +126,27 @@ def banner():
     print("\033[91m[🔰] COUNTRY: \033[97m", country)
     print("\033[91m[🔰] NHÀ MẠNG: \033[97m", org.split()[1] if len(org.split())>1 else org)
     print("\033[97m════════════════════════════════════════════════")
+def box(text, width=60):
+    tl, tr, bl, br = "╭", "╮", "╰", "╯"
+    h, v = "─", "│"
 
+    padding = (width - 2 - len(text)) // 2
+    line = v + " " * padding + text + " " * (width - 2 - len(text) - padding) + v
+
+    print(tl + h*(width-2) + tr)
+    print(v + Colorate.Horizontal(Colors.rainbow, text.center(width-2), 1) + v)
+    print(bl + h*(width-2) + br)
+    
 def print_menu():
-    print(Colorate.Horizontal(Colors.red_to_yellow, """
-    1️⃣  sin(angle)
-    2️⃣  cos(angle)
-    3️⃣  tan(angle)
-    4️⃣  cot(angle)
-    5️⃣  🔄 Độ (°) → Radian (rad)
-    6️⃣  🔄 Radian (rad) → Độ (°)
-    0️⃣  ❎ Thoát
-    """))
-
+    box("Giải sin,cos,...",50)
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Sin()', 1)}{END}{GREEN}[Online👑]{END}")
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Cos()', 1)}{END}{GREEN}[Online👑]{END}")
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Tang()', 1)}{END}{GREEN}[Online👑]{END}")
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Cotang()', 1)}{END}{GREEN}[Online👑]{END}")
+    box("Đổi Đơn Vị",50)
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, '🔄 Độ (°) → Radian (rad)', 1)}{END}{GREEN}[Online👑]{END}")
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, '🔄 Radian (rad) → Độ (°)', 1)}{END}{GREEN}[Online👑]{END}")
+    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Thoát Tool', 1)}{END}{GREEN}[Online👑]{END}")
 # ========== Main ==========
 def main():
     if len(sys.argv) >= 3:
@@ -158,7 +167,6 @@ def main():
         return
 
     while True:
-        clear_screen()
         banner()
         print_menu()
         choice = input("👉 Chọn: ").strip()
