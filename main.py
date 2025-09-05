@@ -7,12 +7,41 @@ import os
 import requests
 import subprocess
 
+# MA MAU
+BLACK = "\033[0;30m"
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+BROWN = "\033[0;33m"
+BLUE = "\033[0;34m"
+PURPLE = "\033[0;35m"
+CYAN = "\033[0;36m"
+LIGHT_GRAY = "\033[0;37m"
+DARK_GRAY = "\033[1;30m"
+LIGHT_RED = "\033[1;31m"
+LIGHT_GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+LIGHT_BLUE = "\033[1;34m"
+LIGHT_PURPLE = "\033[1;35m"
+LIGHT_CYAN = "\033[1;36m"
+LIGHT_WHITE = "\033[1;37m"
+BOLD = "\033[1m"
+FAINT = "\033[2m"
+ITALIC = "\033[3m"
+UNDERLINE = "\033[4m"
+BLINK = "\033[5m"
+NEGATIVE = "\033[7m"
+CROSSED = "\033[9m"
+END = "\033[0m"
 
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
 LOCAL_FILE = os.path.abspath(__file__)
 
 def self_update():
     try:
+        # Nếu đang chạy exe thì bỏ qua update
+        if getattr(sys, "frozen", False):
+            return  
+
         r = requests.get(REPO_RAW_URL, timeout=5)
         if r.status_code == 200:
             new_code = r.text
@@ -23,9 +52,10 @@ def self_update():
                 with open(LOCAL_FILE, "w", encoding="utf-8") as f:
                     f.write(new_code)
                 print("✅ Đã cập nhật! Khởi động lại...")
-                os.execv(sys.executable, ["python"] + [LOCAL_FILE] + sys.argv[1:])
+                os.execv(sys.executable, [sys.executable, LOCAL_FILE] + sys.argv[1:])
     except Exception as e:
         print("⚠️ Không thể cập nhật:", e)
+
 self_update()
 
 def relaunch_in_windows_terminal():
@@ -138,15 +168,16 @@ def box(text, width=60):
     print(bl + h*(width-2) + br)
     
 def print_menu():
-    box("Giải sin,cos,...",50)
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Sin()', 1)}{END}{GREEN}[Online👑]{END}")
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Cos()', 1)}{END}{GREEN}[Online👑]{END}")
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Tang()', 1)}{END}{GREEN}[Online👑]{END}")
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Cotang()', 1)}{END}{GREEN}[Online👑]{END}")
-    box("Đổi Đơn Vị",50)
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, '🔄 Độ (°) → Radian (rad)', 1)}{END}{GREEN}[Online👑]{END}")
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, '🔄 Radian (rad) → Độ (°)', 1)}{END}{GREEN}[Online👑]{END}")
-    print(f"〖{LIGHT_WHITE}2.{END} {Colorate.Horizontal(Colors.blue_to_black, 'Thoát Tool', 1)}{END}{GREEN}[Online👑]{END}")
+    box("Giải sin,cos,...", 50)
+    print(f"〖1〗 {Colorate.Horizontal(Colors.blue_to_black, 'Sin()', 1)}{GREEN}[Online👑]{END}")
+    print(f"〖2〗 {Colorate.Horizontal(Colors.blue_to_black, 'Cos()', 1)}{GREEN}[Online👑]{END}")
+    print(f"〖3〗 {Colorate.Horizontal(Colors.blue_to_black, 'Tang()', 1)}{GREEN}[Online👑]{END}")
+    print(f"〖4〗 {Colorate.Horizontal(Colors.blue_to_black, 'Cotang()', 1)}{GREEN}[Online👑]{END}")
+    box("Đổi Đơn Vị", 50)
+    print(f"〖5〗 {Colorate.Horizontal(Colors.blue_to_black, '🔄 Độ (°) → Radian (rad)', 1)}{GREEN}[Online👑]{END}")
+    print(f"〖6〗 {Colorate.Horizontal(Colors.blue_to_black, '🔄 Radian (rad) → Độ (°)', 1)}{GREEN}[Online👑]{END}")
+    print(f"〖0〗 {Colorate.Horizontal(Colors.blue_to_black, 'Thoát Tool', 1)}{GREEN}[Online👑]{END}")
+
 # ========== Main ==========
 def main():
     if len(sys.argv) >= 3:
