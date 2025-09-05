@@ -4,7 +4,6 @@ import sympy as sp
 from sympy import pi
 from pystyle import Colors, Colorate
 import os
-import subprocess
 import requests
 
 REPO_RAW_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/phattool/refs/heads/main/main.py"
@@ -25,28 +24,7 @@ def self_update():
                 os.execv(sys.executable, ["python"] + [LOCAL_FILE] + sys.argv[1:])
     except Exception as e:
         print("⚠️ Không thể cập nhật:", e)
-
-IS_FROZEN = getattr(sys, 'frozen', False)
-
-# chỉ update khi chạy .py
-if not IS_FROZEN:
-    def self_update():
-        try:
-            r = requests.get(REPO_RAW_URL, timeout=5)
-            if r.status_code == 200:
-                new_code = r.text
-                with open(LOCAL_FILE, "r", encoding="utf-8") as f:
-                    old_code = f.read()
-                if new_code.strip() != old_code.strip():
-                    print("🔄 Đang cập nhật code mới từ GitHub...")
-                    with open(LOCAL_FILE, "w", encoding="utf-8") as f:
-                        f.write(new_code)
-                    print("✅ Đã cập nhật! Khởi động lại...")
-                    os.execv(sys.executable, ["python"] + [LOCAL_FILE] + sys.argv[1:])
-        except Exception as e:
-            print("⚠️ Không thể cập nhật:", e)
-
-    self_update()
+self_update()
 
 def relaunch_in_windows_terminal():
     # Chỉ áp dụng cho Windows
@@ -209,4 +187,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    input("\n👉 Nhấn Enter để thoát...")
